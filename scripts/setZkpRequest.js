@@ -4,7 +4,7 @@ async function main() {
   const validatorAddress = "0xb1e86C4c687B85520eF4fd2a0d14e81970a15aFB";
 
   // Grab the schema hash from Polygon ID Platform
-  const schemaHash = "770cf9ac189db86992744bc7025b2872"
+  const schemaHash = "fe8c562bfa69eff7ddae9d1005a2c31e"
 
   const schemaEnd = fromLittleEndian(hexToBytes(schemaHash))
 
@@ -17,10 +17,18 @@ async function main() {
   circuitId,
   };
 
-  // address of the SBT Contract
-  SBTVerifierAddress = "<>"
+  const countryQuery = {
+    schema: ethers.BigNumber.from(schemaEnd),
+    slotIndex: 2,
+    operator: 4,
+    value: [91, 65, ...new Array(63).fill(0).map(i => 0)],
+    circuitId,
+  }
 
-  let sbtVerifier = await hre.ethers.getContractAt("ERC20Verifier", SBTVerifierAddress)
+  // address of the SBT Contract
+  SBTVerifierAddress = "0xeA524Fa4af9185329c22c7B9E248956AD4C90121"
+
+  let sbtVerifier = await hre.ethers.getContractAt("ZkpNftToken", SBTVerifierAddress)
 
   const requestId = await sbtVerifier.TRANSFER_REQUEST_ID();
 
@@ -52,3 +60,10 @@ function fromLittleEndian(bytes) {
   });
   return result;
 }
+
+// We recommend this pattern to be able to use async/await everywhere
+// and properly handle errors.
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

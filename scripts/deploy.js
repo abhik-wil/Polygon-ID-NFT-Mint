@@ -11,7 +11,7 @@ async function main() {
   const zkSBT = await zkSBTContract.deploy();
 
   await zkSBT.deployed();
-  console.log(verifierName, " deployed to:", zkSBT.address);
+  console.log("ZkpNftToken deployed to:", zkSBT.address);
 }
 
 

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
@@ -10,7 +9,7 @@ import "./lib/GenesisUtils.sol";
 import "./interfaces/ICircuitValidator.sol";
 import "./verifiers/ZKPVerifier.sol";
 
-contract ZkpNftToken is ERC721, ERC721URIStorage, Ownable, ZKPVerifier {
+contract ZkpNftToken is ERC721URIStorage, Ownable, ZKPVerifier {
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIdCounter;
@@ -50,18 +49,19 @@ contract ZkpNftToken is ERC721, ERC721URIStorage, Ownable, ZKPVerifier {
         uint256 id = inputs[validator.getChallengeInputIndex()];
         // execute the airdrop
         if (idToAddress[id] == address(0)) {
-            super._mint(_msgSender(), TOKEN_AMOUNT_FOR_AIRDROP_PER_ID);
+            super._mint(_msgSender(), 1);
             addressToId[_msgSender()] = id;
             idToAddress[id] = _msgSender();
         }
     }
 
     function _beforeTokenTransfer(
-        address /* from */,
+        address from,
         address to,
-        uint256 /* amount */
-    ) internal view override {
-        super._beforeTokenTransfer(from, to, tokenId);
+        uint256 tokenId,
+        uint256
+    ) internal override {
+        super._beforeTokenTransfer(from, to, tokenId, 1);
         require(from == address(0) || to == address(0), "Not Allowed");
         require(proofs[to][TRANSFER_REQUEST_ID] == true, "Unverified Identity");
     }
@@ -78,13 +78,13 @@ contract ZkpNftToken is ERC721, ERC721URIStorage, Ownable, ZKPVerifier {
 
     function _burn(
         uint256 tokenId
-    ) internal override(ERC721, ERC721URIStorage) {
+    ) internal override(ERC721URIStorage) {
         super._burn(tokenId);
     }
 
     function tokenURI(
         uint256 tokenId
-    ) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+    ) public view override(ERC721URIStorage) returns (string memory) {
         return super.tokenURI(tokenId);
     }
 }
